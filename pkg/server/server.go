@@ -18,8 +18,8 @@ type Serve struct {
 func InitServer(todoHandler *handler.Handler, s chan *Serve) {
 	r := gin.Default()
 	r.Use(gin.Logger())
-	r.GET("/fetchtodo/:page/:limit", todoHandler.FetchTodo)
-	r.GET("/fetchbyid/:todoId", todoHandler.FetchTodoByID)
+	r.GET("/home/:page/:limit", todoHandler.FetchTodo)
+	r.GET("/fetchtodo/:todoId", todoHandler.FetchTodoByID)
 	r.POST("/createtodo", todoHandler.CreateTodo)
 	r.PATCH("/updatetodo/:todoId", todoHandler.UpdateTodo)
 	r.DELETE("/deletetodo/:todoId", todoHandler.DeleteTodo)

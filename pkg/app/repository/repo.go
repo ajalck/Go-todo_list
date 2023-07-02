@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"math"
+	"reflect"
 	"time"
 
 	"github.com/ajalck/todo_list/pkg/model"
@@ -19,9 +20,9 @@ func NewRepo(db *gorm.DB) Repo {
 
 func (r *repo) FetchTodo(page, limit int) ([]model.Todo, interface{}, error) {
 	var totalRecords int64
-	r.DB.Model(&model.Todo{}).Count(&totalRecords)
+	r.DB.Model(&model.Todo{}).Where("due > ?", time.Now()).Count(&totalRecords)
 	if totalRecords == 0 {
-		return []model.Todo{}, nil, errors.New("no records found")
+		return nil, nil, errors.New("no records found")
 	}
 	offset, metadata := func(currentPage int) (int, interface{}) {
 		offset := (currentPage - 1) * limit
@@ -39,10 +40,13 @@ func (r *repo) FetchTodo(page, limit int) ([]model.Todo, interface{}, error) {
 		}
 		return offset, metadata
 	}(page)
+	if int64(reflect.ValueOf(metadata).FieldByName("TotalPages").Float()) < int64(page) {
+		return nil, nil, errors.New("record not found")
+	}
 	list := []model.Todo{}
-	result := r.DB.Model(&model.Todo{}).Select("id", "title", "description", "due").Offset(offset).Limit(limit).Find(&list)
+	result := r.DB.Model(&model.Todo{}).Where("due > ?", time.Now()).Select("id", "title", "description", "due").Offset(offset).Limit(limit).Find(&list)
 	if result.Error != nil {
-		return []model.Todo{}, nil, errors.New("unable to fetch records")
+		return nil, nil, errors.New("unable to fetch records")
 	}
 	return list, metadata, nil
 }
