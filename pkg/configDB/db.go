@@ -1,7 +1,6 @@
 package configDB
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/ajalck/todo_list/pkg/model"
@@ -19,6 +18,5 @@ func ConnectDB(ch chan *gorm.DB) {
 		log.Fatal("Failed to sync `ToDo` model")
 	}
 	log.Println("Connected to DB successfully")
-	fmt.Println(db)
 	ch <- db
 }

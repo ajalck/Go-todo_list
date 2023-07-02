@@ -26,7 +26,7 @@ func (h *Handler) FetchTodo(c *gin.Context) {
 		return
 	}
 	result := struct {
-		List     model.Todo
+		List     []model.Todo
 		MetaData interface{}
 	}{
 		List:     list,
@@ -38,7 +38,7 @@ func (h *Handler) FetchTodoByID(c *gin.Context) {
 	todoId, _ := strconv.Atoi(c.Query("todoId"))
 	todo, err := h.repo.FetchTodoByID(uint(todoId))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, todo)
@@ -50,7 +50,7 @@ func (h *Handler) CreateTodo(c *gin.Context) {
 		return
 	}
 	if err := h.repo.CreateTodo(body); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, "Successfully created new todo")
@@ -64,7 +64,7 @@ func (h *Handler) UpdateTodo(c *gin.Context) {
 	}
 	err := h.repo.UpdateTodo(uint(todoId), body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, "Successfully updated todo")
@@ -73,7 +73,7 @@ func (h *Handler) DeleteTodo(c *gin.Context) {
 	todoId, _ := strconv.Atoi(c.Query("todoId"))
 	err := h.repo.DeleteTodo(uint(todoId))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, "Successfully deleted todo")
